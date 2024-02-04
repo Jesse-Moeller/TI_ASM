@@ -55,3 +55,11 @@ Template:
 .end
 .end
 ```
+
+Note, the prgram at the top doesn't clear screen. So, if you're iterating, you might see
+
+![trailing zero](./1.png "trailing zero")
+
+which might make one think that we've introduced a trailing 0 by accident... but it's just what's left over from 
+
+![Asm(prgmHELLO](./2.png "Asm(prgmHELLO")

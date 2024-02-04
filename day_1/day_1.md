@@ -1,3 +1,4 @@
+# Introduction
 We're gonna write assembly for ti83+. Here's the tools:
 
 - Wabbitemu (needs ti83+ ROM)
