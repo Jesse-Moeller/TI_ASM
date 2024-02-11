@@ -35,7 +35,7 @@ These, together with `IX`, are 16-bit and can store a number in the range `0-655
 
 ### 8-bit Registers
 
- - `A` as Accumulator is primary register for arithmetic ops and for accessing memory.
+ - `A` as **A**ccumulator is primary register for arithmetic ops and for accessing memory.
  - `B` as an 8-**b**it counter.
  - `C` for... hardware ports?
  - `F` is for flags.
@@ -76,7 +76,7 @@ S↓D→|A|B|C|D|E|H|L|BC|DE|HL|(BC)|(DE)|(HL)|(imm16)
 |imm8|✓|✓|✓|✓|✓|✓|✓||||||✓
 |imm16||||||||✓|✓|✓
 
-(`imm_` means "immediate value")
+(`imm8` (`imm16`) means "immediate 8-bit (16-bit) value")
 
 #### Examples
 
@@ -94,7 +94,7 @@ LD C, E
 
 ### Signed Numbers
 
-Lots of schemes for making a string of bits represent a negative number, but we ill only focus on two's complement. The most significant bit tells us if the number is negative or not. If it's positive, the representation is like a normal unsigned number excpet we're capped at `2^7-1`.
+Lots of schemes for making a string of bits represent a negative number, but we will only focus on two's complement. The most significant bit tells us if the number is negative or not. If it's positive, the representation is like a normal unsigned number excpet we're capped at `2^7-1`.
 
 
 `01111111b = 127`
