@@ -70,3 +70,38 @@ fail:
 success:
     // blah blah success
 ```
+
+#### Loops
+
+Pretty simple, you have a counter, two labels, and a condition to check.
+
+```
+    LD     A, 0          ; Initialization
+While:
+    CP     100          ; Loop termination test
+    JR     NC, EndWhile
+    INC    A            ; Loop body
+    JR     While
+EndWhile:
+```
+
+The above is also a for loop, where we execute something 100 times. Not all while loops are for loops. Additonally, the z80 has a special instruction specifically for for loops. Here's how to substract 1 from `A` 100 times:
+
+```
+    LD     B, 100
+loop:
+    DEC    A
+    DJNZ   loop
+```
+
+the instruction `DJNZ label` subtracts one from `B` (warning: zero => overflow) and jumps to `label` if `B` is not zero. This jump is subject to the same restrictions as `JR`.
+
+#### Procedures
+
+A _procedure_ is any block of code which is designed to be `CALL`ed into:
+
+```
+CALL label
+```
+
+and ends with `RET`. When we're in some part of the code LOCATION far away from function `foo`, the `CALL` function pushes the program counter (LOCATION) onto the hardware stack. Then, `foo` executes and performs whatever functions are intended, and lasty calls RET. RET is basically doing `POP PC`, so that ideally LOCATION is placed back into the program counter, and that's where execution continues (where we left off before entering `foo`).
