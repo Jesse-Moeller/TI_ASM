@@ -3,13 +3,12 @@
 #### Logic
 
 We can do bit-level logic against the accumulator. 
-
-||
-|-
-`AND { reg8 \| imm8 \| (HL) }`
-`OR  { reg8 \| imm8 \| (HL) }`
-`XOR { reg8 \| imm8 \| (HL) }`
-`CPL`
+```
+AND { reg8 \| imm8 \| (HL) }
+OR  { reg8 \| imm8 \| (HL) }
+XOR { reg8 \| imm8 \| (HL) }
+CPL
+```
 
 (Side note... AND (∧) and XOR (⊕) are multiplication and addition in the field of two elements. Can recover OR (∨) as A∨B = (A∧B)⊕(A⊕B) and NOT (¬) as ¬A=A⊕1)
 
