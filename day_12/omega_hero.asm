@@ -4,7 +4,7 @@
 .list
 .ORG userMem - 2
 ; Constants
-BLANK .EQU $00
+BLANK .EQU $20
 OMEGA .EQU $CA
 ; Begin Program
 .DB t2ByteTok, tAsmCmp
@@ -13,16 +13,24 @@ OldRow:
     .DB $00
 OldCol:
     .DB $00
-    LD  A, 0
-    LD  (CurRow), A
-    LD  (CurCol), A
+    bcall(_RunIndicOff)
+    bcall(_ClrLCDFull)
+    LD  BC, 0
+    LD (IY+(appFlags+appTextSave)), C
+    LD  (CurRow), BC
+    LD  (OldRow), BC
+    LD  A, OMEGA
+    bcall(_PutMap)
 KeyLoop:
     bcall(_GetCSC)
     CP  skRight
     JR  Z, Right
     CP  skLeft
     JR  Z, Left
-    ; down, up
+    CP  skDown
+    JR  Z, Down
+    CP  skUp
+    JR  Z, Up
     CP  skClear
     RET Z
     JR  KeyLoop
@@ -40,26 +48,29 @@ Left:
     DEC A
     LD  (CurCol), A
     JR  UpdateOmega
-; Assumption is that Omega is at OldRow and OldCol,
-; CurRow and CurCol have been updated and we now need
-; to wipe the old Omega and draw the new Omega.
+Down:
+    LD  A, (CurRow)
+    CP  7
+    JR  Z, KeyLoop
+    INC A
+    LD  (CurRow), A
+    JR  UpdateOmega
+Up:
+    LD  A, (CurRow)
+    CP  0
+    JR  Z, KeyLoop
+    DEC A
+    LD  (CurRow), A
+    JR  UpdateOmega
 UpdateOmega:
     LD  A, OMEGA
     bcall(_PutMap)
-    LD  HL, CurRow
-    LD  B, (HL)
-    LD  HL, CurCol
-    LD  C, (HL)
-    PUSH BC
-    LD  A, (OldRow)
-    LD  (CurRow), A
-    LD  A, (OldCol)
-    LD  (CurCol), A
+    LD  BC, (CurRow)
+    LD  HL, (OldRow)
+    LD  (CurRow), HL
     LD  A, BLANK
     bcall(_PutMap)
-    POP BC
     LD  (CurRow), BC
+    LD  (OldRow), BC
     JR KeyLoop
 .end
-
-; Oof this is ugly, revisit with coffee
