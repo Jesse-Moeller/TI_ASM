@@ -1,0 +1,153 @@
+# More Program Control
+
+#### Self-modifying Code
+
+Recall that we can declare and re-write bytes in our programs:
+
+```
+    LD     A, (data)
+    ADD    A, C
+    ADC    A, B
+    LD     (data), A
+    RET
+data:    .DB    35
+```
+
+We can do this even if the contents beyond a label aren't declared bytes.
+
+```
+    LD    A, 26
+    LD    (Blegh), A
+    RET
+Blegh:
+    CP    7             ; FE *n* (in bytecode, two bytes)
+    RET
+```
+
+So, the above changes the contents of Blegh to be `1A 07`, where `FE` looked at the subsequent byte, `1A` is a standalone instruction `LD A, (DE)` so `07` becomes an instruction also, `RLCA`.
+
+More useful examples are modifying the offsets of index registers:
+
+```
+IX_Offset    .EQU    $+2
+    INC    (IX + 0)      ; $DD $34 $00
+    LD     A, (IX_Offset)
+    ADD    A, 3
+    LD     (IX_Offset), A
+```
+
+Changing the target of a `JR` or `DJNZ`
+
+```
+    LD     A, B
+    ADD    A, A
+    LD     (Jump), A
+Jump    .EQU    $+1
+    JR     $00
+    INC    IX    ; JR $00
+    INC    IX    ; JR $02
+    INC    IX    ; JR $04
+    INC    IX    ; JR $06
+    INC    IX    ; JR $08
+    INC    IX    ; JR $0A
+```
+
+Save a register faster than the stack:
+
+```
+    LD     (save_a), A
+    LD     (save_hl), HL
+
+    ; Do some math on A and HL ...
+
+save_a     .EQU    $+1
+    LD     A, $00
+
+save_hl    .EQU    $+1
+    LD     HL, $0000
+```
+
+#### PUSH without POP
+
+Basically, the idea is to `PUSH` and then `RET`. This can save a lot of bytecode, rather than jumping everywhere.
+
+```
+Start:
+    LD    HL, Start
+    PUSH    HL
+    . . .
+    JP    Z, Routine01
+    . . .
+    JP    Z, Routine02
+    . . .
+    JP    C, Routine03
+    . . .
+    ; This is for exiting the program
+    POP    AF    ; Remove Start from the stack
+    RET
+
+Routine01:
+    ; Do stuff
+    RET    ; Go back to Start
+
+Routine02:
+    ; Do stuff
+    RET    ; Go back to Start
+
+Routine03:
+    ; Do stuff
+    RET    ; Go back to Start
+```
+
+#### Lookup tables (LUT)
+
+Just arrays. Good for pre-computed functions that would otherwise be very slow. For example, sine. Exercise symmetry of the function to save space, if desired.
+
+#### Vector Tables
+
+A vector table is a LUT where each table entry is a 16-bit address. This is good for a switch. Vector tables are faster and easier than large CP/JP blocks.
+
+Example:
+
+```
+VectTbl:
+    .DW     ClearScreen
+    .DW     PutSprite
+    .DW     DrawLine
+    .DW     EndPrgm
+    .DW     BlackScreen
+```
+The elements of the vector table are accessed just as a lookup table
+
+```
+    LD     H, 0
+    LD     L, A
+    LD     HL, HL
+    LD     DE, VectTbl
+    ADD    HL, DE
+
+    LD     A, (HL)
+    INC    HL
+    LD     H, (HL)
+    LD     L, A
+    JP     (HL)
+```
+
+#### Jump Tables
+
+Similar to vec tables, jump tables also hold the jump instructions.
+
+```
+JumpTbl:
+    JP    ClearScreen
+    JP    PutSprite
+    JP    DrawLine
+    JP    EndPrgm
+    JP    BlackScreen
+```
+
+need to `CALL` into them. 
+
+```
+CALL JumpTbl + 3 * 2
+```
