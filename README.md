@@ -1,5 +1,3 @@
-These are just some notes I took following along with 
+These are notes of mine from following along with ["AsmPrgm in 28 days" for the Ti-83+ (and family).](https://taricorp.gitlab.io/83pa28d/index.html).
 
-https://taricorp.gitlab.io/83pa28d/index.html
-
-"AsmPrgm in 28 days" for the Ti-83+ (and family). Open questions can be found by searching for **???**. If you are feeling charitable, please submit a pull request to address or e-mail me at jessemmoeller@gmail.com.
+Here's [the z80 datasheet](https://www.zilog.com/docs/z80/um0080.pdf).
